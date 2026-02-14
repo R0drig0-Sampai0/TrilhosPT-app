@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.trilhospt.ui.auth.LoginFragment"
+        android:label="Login"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_loginFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_loginFragment_to_registerFragment"
+            app:destination="@id/registerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.example.trilhospt.ui.auth.RegisterFragment"
+        android:label="Register"
+        tools:layout="@layout/fragment_register">
+        <action
+            android:id="@+id/action_registerFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.trilhospt.ui.home.HomeFragment"
+        android:label="Início"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_trailDetailFragment"
+            app:destination="@id/trailDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/trailListFragment"
+        android:name="com.example.trilhospt.ui.trails.TrailListFragment"
+        android:label="Trails"
+        tools:layout="@layout/fragment_trail_list">
+        <action
+            android:id="@+id/action_trailListFragment_to_trailDetailFragment"
+            app:destination="@id/trailDetailFragment" />
+        <action
+            android:id="@+id/action_trailListFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_trailListFragment_to_createTrailFragment"
+            app:destination="@id/createTrailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/createTrailFragment"
+        android:name="com.example.trilhospt.ui.trails.CreateTrailFragment"
+        android:label="Criar Trilho"
+        tools:layout="@layout/fragment_create_trail" />
+
+    <fragment
+        android:id="@+id/trailDetailFragment"
+        android:name="com.example.trilhospt.ui.trails.TrailDetailFragment"
+        android:label="Trail Details"
+        tools:layout="@layout/fragment_trail_detail">
+        <argument
+            android:name="trailId"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_trailDetailFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_trailDetailFragment_to_editTrailFragment"
+            app:destination="@id/editTrailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/editTrailFragment"
+        android:name="com.example.trilhospt.ui.trails.EditTrailFragment"
+        android:label="Editar Trilho"
+        tools:layout="@layout/fragment_edit_trail">
+        <argument
+            android:name="trailId"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.trilhospt.ui.profile.ProfileFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile">
+        <argument
+            android:name="userId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <action
+            android:id="@+id/action_profileFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_profileFragment_to_trailListFragment"
+            app:destination="@id/trailListFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_aboutFragment"
+            app:destination="@id/aboutFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_trailDetailFragment"
+            app:destination="@id/trailDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.example.trilhospt.ui.profile.AboutFragment"
+        android:label="Sobre"
+        tools:layout="@layout/fragment_about" />
+</navigation>
