@@ -1,3 +1,47 @@
 <resources>
     <string name="app_name">TrilhosPT</string>
+    
+    <!-- Geral -->
+    <string name="loading">A carregar...</string>
+    <string name="error_general">Ocorreu um erro. Tente novamente.</string>
+    <string name="cancel">Cancelar</string>
+    <string name="save">Guardar</string>
+    <string name="post">Publicar</string>
+    <string name="logout">Terminar Sessão</string>
+    
+    <!-- Login / Registo -->
+    <string name="login">Entrar</string>
+    <string name="register">Registar</string>
+    <string name="email">E-mail</string>
+    <string name="password">Palavra-passe</string>
+    <string name="username">Nome de utilizador</string>
+    
+    <!-- Lista de Trilhos -->
+    <string name="explore">Explorar</string>
+    <string name="find_adventure">Encontra a tua próxima aventura em Portugal</string>
+    <string name="search_hint">Pesquisar trilhos, locais...</string>
+    <string name="all_categories">Todos</string>
+    <string name="easy">Fácil</string>
+    <string name="moderate">Moderado</string>
+    <string name="hard">Difícil</string>
+    <string name="popular_trails">Trilhos Populares</string>
+    <string name="no_trails">Nenhum trilho encontrado.</string>
+    
+    <!-- Detalhe de Trilho -->
+    <string name="description">Descrição</string>
+    <string name="route">Percurso</string>
+    <string name="distance">Distância</string>
+    <string name="duration">Duração</string>
+    <string name="difficulty">Dificuldade</string>
+    <string name="reviews">Avaliações</string>
+    <string name="add_review">Avaliar Trilho</string>
+    <string name="post_review">Publicar Avaliação</string>
+    
+    <!-- Perfil -->
+    <string name="my_profile">O Meu Perfil</string>
+    <string name="my_stats">As Minhas Estatísticas</string>
+    <string name="total_distance">Distância Total</string>
+    <string name="trails_created">Trilhos Criados</string>
+    <string name="level">Nível</string>
+    
 </resources>
