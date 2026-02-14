@@ -10,6 +10,7 @@ import androidx.fragment.app.DialogFragment
 import coil.load
 import com.example.trilhospt.R
 import com.example.trilhospt.databinding.DialogImageDetailBinding
+import com.example.trilhospt.data.remote.api.RetrofitClient
 
 class ImageDetailDialogFragment : DialogFragment() {
 
@@ -45,7 +46,8 @@ class ImageDetailDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val imageUrl = arguments?.getString(ARG_IMAGE_URL) ?: return
-        val fullUrl = if (imageUrl.startsWith("http")) imageUrl else "http://10.129.146.48:8000$imageUrl"
+        val baseUrl = RetrofitClient.BASE_URL.trimEnd('/')
+        val fullUrl = if (imageUrl.startsWith("http")) imageUrl else "$baseUrl/${imageUrl.trimStart('/')}"
 
         binding.ivFullImage.load(fullUrl) {
             crossfade(true)

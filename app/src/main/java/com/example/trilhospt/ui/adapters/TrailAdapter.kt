@@ -5,7 +5,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.trilhospt.data.remote.dto.TrailDto
+
 import com.example.trilhospt.databinding.ItemTrailBinding
+import com.example.trilhospt.data.remote.api.RetrofitClient
 
 class TrailAdapter(
     private var trails: List<TrailDto>,
@@ -92,8 +94,9 @@ class TrailAdapter(
             if (path.startsWith("http")) return path
             
             // Otherwise, construct full URL with base URL
-            val baseUrl = "http://10.129.146.48:8000"
-            return "$baseUrl$path"
+            val baseUrl = RetrofitClient.BASE_URL.trimEnd('/')
+            val safePath = path.trimStart('/')
+            return "$baseUrl/$safePath"
         }
     }
 }

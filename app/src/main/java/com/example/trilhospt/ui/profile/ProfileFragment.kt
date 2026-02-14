@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import coil.load
 import com.example.trilhospt.R
 import com.example.trilhospt.data.repository.ApiRepository
+import com.example.trilhospt.data.remote.api.RetrofitClient
 import com.example.trilhospt.databinding.FragmentProfileBinding
 import com.example.trilhospt.ui.ViewModelFactory
 import com.example.trilhospt.ui.adapters.BadgeAdapter
@@ -156,7 +157,8 @@ class ProfileFragment : Fragment() {
 
                     // Load Profile Photo
                     user.profilePhoto?.let { photoUrl ->
-                        val fullUrl = if (photoUrl.startsWith("http")) photoUrl else "http://10.129.146.48:8000$photoUrl"
+                        val baseUrl = RetrofitClient.BASE_URL.trimEnd('/')
+                        val fullUrl = if (photoUrl.startsWith("http")) photoUrl else "$baseUrl/${photoUrl.trimStart('/')}"
                         binding.ivProfilePhoto.load(fullUrl) {
                             crossfade(true)
                             placeholder(android.R.drawable.ic_menu_gallery)

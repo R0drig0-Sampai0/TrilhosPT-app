@@ -7,6 +7,7 @@ import coil.load
 import com.example.trilhospt.R
 import com.example.trilhospt.data.remote.dto.ReviewDto
 import com.example.trilhospt.databinding.ItemReviewBinding
+import com.example.trilhospt.data.remote.api.RetrofitClient
 
 class ReviewAdapter(
     private var reviews: List<ReviewDto>,
@@ -31,7 +32,8 @@ class ReviewAdapter(
 
         // Load profile photo if available
         review.user?.profilePhoto?.let { photoUrl ->
-            val fullUrl = if (photoUrl.startsWith("http")) photoUrl else "http://10.129.146.48:8000$photoUrl"
+            val baseUrl = RetrofitClient.BASE_URL.trimEnd('/')
+            val fullUrl = if (photoUrl.startsWith("http")) photoUrl else "$baseUrl/${photoUrl.trimStart('/')}"
             holder.binding.ivUserAvatar.load(fullUrl) {
                 crossfade(true)
                 placeholder(android.R.drawable.ic_menu_gallery)

@@ -15,6 +15,7 @@ import com.example.trilhospt.R
 import com.example.trilhospt.data.remote.dto.ReviewDto
 import com.example.trilhospt.data.remote.dto.TrailDto
 import com.example.trilhospt.data.repository.ApiRepository
+import com.example.trilhospt.data.remote.api.RetrofitClient
 import com.example.trilhospt.databinding.FragmentTrailDetailBinding
 import com.example.trilhospt.ui.ViewModelFactory
 import com.example.trilhospt.ui.adapters.ReviewAdapter
@@ -422,7 +423,8 @@ class TrailDetailFragment : Fragment() {
     private fun buildFullUrl(path: String?): String? {
         if (path == null) return null
         if (path.startsWith("http")) return path
-        return "http://10.129.146.48:8000$path"
+        val baseUrl = RetrofitClient.BASE_URL.trimEnd('/')
+        return "$baseUrl/${path.trimStart('/')}"
     }
 
     override fun onResume() {

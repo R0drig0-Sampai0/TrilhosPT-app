@@ -14,6 +14,7 @@ import com.example.trilhospt.ui.ViewModelFactory
 import com.example.trilhospt.ui.adapters.HorizontalTrailAdapter
 import com.example.trilhospt.ui.trails.TrailViewModel
 import com.example.trilhospt.utils.Resource
+import com.example.trilhospt.data.remote.api.RetrofitClient
 
 class HomeFragment : Fragment() {
 
@@ -90,7 +91,8 @@ class HomeFragment : Fragment() {
         
         val photoUrl = trail.firstPhotoUrl ?: trail.photos?.firstOrNull()?.image
         if (photoUrl != null) {
-            val fullUrl = if (photoUrl.startsWith("http")) photoUrl else "http://10.129.146.48:8000$photoUrl"
+            val baseUrl = RetrofitClient.BASE_URL.trimEnd('/')
+            val fullUrl = if (photoUrl.startsWith("http")) photoUrl else "$baseUrl/${photoUrl.trimStart('/')}"
             binding.ivFeaturedImage.load(fullUrl) {
                 crossfade(true)
                 placeholder(R.drawable.bg_gradient_overlay)

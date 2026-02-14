@@ -7,6 +7,7 @@ import coil.load
 import com.example.trilhospt.R
 import com.example.trilhospt.data.remote.dto.PhotoDto
 import com.example.trilhospt.databinding.ItemPhotoCarouselBinding
+import com.example.trilhospt.data.remote.api.RetrofitClient
 
 class ProfilePhotoAdapter(
     private var photos: List<PhotoDto>,
@@ -16,7 +17,8 @@ class ProfilePhotoAdapter(
     inner class PhotoViewHolder(private val binding: ItemPhotoCarouselBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(photo: PhotoDto) {
             val imageUrl = photo.image ?: ""
-            val fullUrl = if (imageUrl.startsWith("http")) imageUrl else "http://10.129.146.48:8000$imageUrl"
+            val baseUrl = RetrofitClient.BASE_URL.trimEnd('/')
+            val fullUrl = if (imageUrl.startsWith("http")) imageUrl else "$baseUrl/${imageUrl.trimStart('/')}"
             
             binding.ivPhoto.load(fullUrl) {
                 crossfade(true)

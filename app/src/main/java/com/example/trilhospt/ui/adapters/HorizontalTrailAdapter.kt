@@ -7,6 +7,7 @@ import coil.load
 import com.example.trilhospt.R
 import com.example.trilhospt.data.remote.dto.TrailDto
 import com.example.trilhospt.databinding.ItemTrailHorizontalBinding
+import com.example.trilhospt.data.remote.api.RetrofitClient
 
 class HorizontalTrailAdapter(
     private var trails: List<TrailDto>,
@@ -49,7 +50,8 @@ class HorizontalTrailAdapter(
         // Load image (using the same logic as existing adapters)
         val photoUrl = trail.firstPhotoUrl ?: trail.photos?.firstOrNull()?.image
         if (photoUrl != null) {
-            val fullUrl = if (photoUrl.startsWith("http")) photoUrl else "http://10.129.146.48:8000$photoUrl"
+            val baseUrl = RetrofitClient.BASE_URL.trimEnd('/')
+            val fullUrl = if (photoUrl.startsWith("http")) photoUrl else "$baseUrl/${photoUrl.trimStart('/')}"
             holder.binding.ivTrailImage.load(fullUrl) {
                 crossfade(true)
                 placeholder(R.drawable.bg_gradient_overlay)
