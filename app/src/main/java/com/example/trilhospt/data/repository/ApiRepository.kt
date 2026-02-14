@@ -2,7 +2,17 @@ package com.example.trilhospt.data.repository
 
 import com.example.trilhospt.data.remote.api.ApiService
 import com.example.trilhospt.data.remote.api.RetrofitClient
-import com.example.trilhospt.data.remote.dto.*
+import com.example.trilhospt.data.remote.dto.AuthResponse
+import com.example.trilhospt.data.remote.dto.BadgeDto
+import com.example.trilhospt.data.remote.dto.CompletedTrailDto
+import com.example.trilhospt.data.remote.dto.LoginRequest
+import com.example.trilhospt.data.remote.dto.PhotoDto
+import com.example.trilhospt.data.remote.dto.RegisterRequest
+import com.example.trilhospt.data.remote.dto.ReviewDto
+import com.example.trilhospt.data.remote.dto.TrailDto
+import com.example.trilhospt.data.remote.dto.UserDto
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 
 /**
@@ -53,6 +63,14 @@ class ApiRepository {
         }
         throw IllegalStateException("Usuário não autenticado")
     }
+
+    suspend fun getUserById(userId: Int): Response<UserDto> {
+        val token = authInterceptor.getToken()
+        if (token != null) {
+            return apiService.getUserById("Token $token", userId)
+        }
+        throw IllegalStateException("Usuário não autenticado")
+    }
     
     // ========== TRILHOS ==========
     
@@ -60,9 +78,18 @@ class ApiRepository {
         difficulty: String? = null,
         minDistance: Double? = null,
         maxDistance: Double? = null,
-        search: String? = null
+        search: String? = null,
+        userId: Int? = null
     ): Response<List<TrailDto>> {
-        return apiService.getTrails(difficulty, minDistance, maxDistance, search)
+        val paginatedResponse = apiService.getTrails(difficulty, minDistance, maxDistance, search, userId)
+        
+        // Unwrap the paginated response to return just the list
+        return if (paginatedResponse.isSuccessful && paginatedResponse.body() != null) {
+            val results = paginatedResponse.body()!!.results
+            Response.success(results)
+        } else {
+            Response.error(paginatedResponse.code(), paginatedResponse.errorBody()!!)
+        }
     }
     
     suspend fun getTrailById(id: Int): Response<TrailDto> {
@@ -80,7 +107,31 @@ class ApiRepository {
     suspend fun getMyTrails(): Response<List<TrailDto>> {
         val token = authInterceptor.getToken()
         if (token != null) {
-            return apiService.getMyTrails("Token $token")
+            val response = apiService.getMyTrails("Token $token")
+            return if (response.isSuccessful && response.body() != null) {
+                Response.success(response.body()!!.results)
+            } else {
+                if (response.errorBody() != null)
+                     Response.error(response.code(), response.errorBody()!!)
+                else
+                     Response.error(response.code(), okhttp3.ResponseBody.create(null, ""))
+            }
+        }
+        throw IllegalStateException("Usuário não autenticado")
+    }
+
+    suspend fun updateTrail(id: Int, trail: TrailDto): Response<TrailDto> {
+        val token = authInterceptor.getToken()
+        if (token != null) {
+            return apiService.updateTrail("Token $token", id, trail)
+        }
+        throw IllegalStateException("Usuário não autenticado")
+    }
+
+    suspend fun deleteTrail(id: Int): Response<Unit> {
+        val token = authInterceptor.getToken()
+        if (token != null) {
+            return apiService.deleteTrail("Token $token", id)
         }
         throw IllegalStateException("Usuário não autenticado")
     }
@@ -108,6 +159,33 @@ class ApiRepository {
         }
         throw IllegalStateException("Usuário não autenticado")
     }
+
+    suspend fun getUserBadges(userId: Int): Response<List<BadgeDto>> {
+        val token = authInterceptor.getToken()
+        if (token != null) {
+            return apiService.getUserBadges(userId)
+        }
+        throw IllegalStateException("Usuário não autenticado")
+    }
+
+    suspend fun getUserPhotos(userId: Int): Response<List<PhotoDto>> {
+        return apiService.getUserPhotos(userId)
+    }
+
+    suspend fun uploadPhoto(
+        image: MultipartBody.Part,
+        trailId: RequestBody,
+        lat: RequestBody,
+        lon: RequestBody,
+        description: RequestBody?
+    ): Response<PhotoDto> {
+        val token = authInterceptor.getToken()
+        if (token != null) {
+            val authToken = "Token $token"
+            return apiService.uploadPhoto(authToken, image, trailId, lat, lon, description)
+        }
+        throw IllegalStateException("Usuário não autenticado")
+    }
     
     // ========== HELPERS ==========
     
@@ -118,4 +196,41 @@ class ApiRepository {
     fun getCurrentToken(): String? {
         return authInterceptor.getToken()
     }
+
+    // ========== COMPLETED TRAILS ==========
+
+    suspend fun markTrailCompleted(trailId: Int): Response<CompletedTrailDto> {
+        val token = authInterceptor.getToken()
+        if (token != null) {
+            val request = mapOf("trail_id" to trailId)
+            return apiService.markTrailCompleted("Token $token", request)
+        }
+        throw IllegalStateException("User not authenticated")
+    }
+
+    suspend fun deleteCompletedTrail(id: Int): Response<Unit> {
+        val token = authInterceptor.getToken()
+        if (token != null) {
+            return apiService.deleteCompletedTrail("Token $token", id)
+        }
+        throw IllegalStateException("User not authenticated")
+    }
+
+    suspend fun getCompletedTrails(userId: Int? = null): Response<List<TrailDto>> {
+        val token = authInterceptor.getToken()
+        if (token != null) {
+            val response = apiService.getCompletedTrails("Token $token", userId)
+            if (response.isSuccessful && response.body() != null) {
+                val completedTrails = response.body()!!.results.map { it.trail }
+                return Response.success(completedTrails)
+            } else {
+                 if (response.errorBody() != null)
+                     return Response.error(response.code(), response.errorBody()!!)
+                 else
+                     return Response.error(response.code(), okhttp3.ResponseBody.create(null, ""))
+            }
+        }
+        throw IllegalStateException("User not authenticated")
+    }
+
 }
