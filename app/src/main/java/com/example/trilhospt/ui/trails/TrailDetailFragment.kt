@@ -138,10 +138,20 @@ class TrailDetailFragment : Fragment() {
                      binding.progressBar.visibility = View.GONE
                      val isCompleted = resource.data
                      if (isCompleted) {
-                         Toast.makeText(requireContext(), "Trilho marcado como concluído!", Toast.LENGTH_SHORT).show()
+                         // Prompt for review
+                         AlertDialog.Builder(requireContext())
+                             .setTitle("Parabéns! 🎉")
+                             .setMessage("Concluíste este trilho! Queres deixar uma avaliação para ajudar outros exploradores?")
+                             .setPositiveButton("Avaliar Agora") { _, _ ->
+                                 showAddReviewDialog(trailId)
+                             }
+                             .setNegativeButton("Mais Tarde", null)
+                             .show()
                      } else {
                          Toast.makeText(requireContext(), "Conclusão removida!", Toast.LENGTH_SHORT).show()
                      }
+                     // Refresh data to update UI state and IDs
+                     viewModel.getTrailDetail(trailId)
                 }
                 is Resource.Error -> {
                      binding.progressBar.visibility = View.GONE
@@ -190,25 +200,64 @@ class TrailDetailFragment : Fragment() {
             reviewAdapter.updateReviews(it)
         }
         
-        // Completion Button
-        if (trail.completedTrailId != null) {
-            binding.btnMarkCompleted.text = "Concluído"
-            binding.btnMarkCompleted.setIconResource(android.R.drawable.checkbox_on_background)
-            binding.btnMarkCompleted.setOnClickListener {
-                 AlertDialog.Builder(requireContext())
-                    .setTitle("Remover conclusão?")
-                    .setPositiveButton("Sim") { _, _ ->
-                        trail.id?.let { id -> viewModel.unmarkAsCompleted(trail.completedTrailId, id) }
-                    }
-                    .setNegativeButton("Não", null)
-                    .show()
-            }
+        // Completion Logic
+        setupCompletionCard(trail)
+    }
+    
+    private fun setupCompletionCard(trail: TrailDto) {
+        val isCompleted = trail.completedTrailId != null
+        
+        // Define colors
+        val colorGreen = android.graphics.Color.parseColor("#4CAF50")
+        val colorGray = android.graphics.Color.DKGRAY
+        
+        // Initial State
+        binding.switchCompletion.isChecked = isCompleted
+        updateCardAppearance(isCompleted, colorGreen, colorGray)
+
+        // Click Listener on Switch
+        binding.switchCompletion.setOnCheckedChangeListener { _, isChecked ->
+             if (isChecked) {
+                 if (trail.completedTrailId == null) {
+                    trail.id?.let { id -> viewModel.markAsCompleted(id) }
+                 }
+             } else {
+                 if (trail.completedTrailId != null) {
+                     AlertDialog.Builder(requireContext())
+                        .setTitle("Remover conclusão?")
+                        .setMessage("Deseja desmarcar este trilho como concluído?")
+                        .setPositiveButton("Sim") { _, _ ->
+                            trail.id?.let { id -> viewModel.unmarkAsCompleted(trail.completedTrailId!!, id) }
+                        }
+                        .setNegativeButton("Não") { _, _ ->
+                            binding.switchCompletion.isChecked = true // Revert
+                        }
+                        .setOnCancelListener { 
+                            binding.switchCompletion.isChecked = true // Revert on cancel
+                        }
+                        .show()
+                 }
+             }
+        }
+        
+        // Click Listener on Card (toggles switch)
+        binding.cardCompletionStatus.setOnClickListener {
+            binding.switchCompletion.toggle()
+        }
+    }
+
+    private fun updateCardAppearance(isCompleted: Boolean, activeColor: Int, inactiveColor: Int) {
+        if (isCompleted) {
+            binding.ivCompletionIcon.setColorFilter(activeColor)
+            binding.tvCompletionTitle.text = "Trilho Concluído"
+            binding.tvCompletionSubtitle.text = "Parabéns! Completaste este trilho."
+            binding.cardCompletionStatus.strokeWidth = 2
+            binding.cardCompletionStatus.strokeColor = activeColor
         } else {
-            binding.btnMarkCompleted.text = "Marcar como Concluído"
-            binding.btnMarkCompleted.icon = null
-            binding.btnMarkCompleted.setOnClickListener {
-                 trail.id?.let { id -> viewModel.markAsCompleted(id) }
-            }
+            binding.ivCompletionIcon.setColorFilter(inactiveColor)
+            binding.tvCompletionTitle.text = "Marcar como Concluído"
+            binding.tvCompletionSubtitle.text = "Já fizeste este trilho?"
+            binding.cardCompletionStatus.strokeWidth = 0
         }
     }
 
@@ -275,6 +324,21 @@ class TrailDetailFragment : Fragment() {
         
         // Default center in Portugal
         mapView.controller.setCenter(GeoPoint(39.5, -8.0))
+
+        // Fix scroll conflict with ScrollView
+        mapView.setOnTouchListener { v, event ->
+            when (event.action) {
+                android.view.MotionEvent.ACTION_DOWN,
+                android.view.MotionEvent.ACTION_MOVE -> {
+                    v.parent.requestDisallowInterceptTouchEvent(true)
+                }
+                android.view.MotionEvent.ACTION_UP,
+                android.view.MotionEvent.ACTION_CANCEL -> {
+                    v.parent.requestDisallowInterceptTouchEvent(false)
+                }
+            }
+            false // Process event normally by MapView
+        }
     }
 
     private fun drawTrailOnMap(trail: TrailDto) {

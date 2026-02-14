@@ -120,4 +120,10 @@
         android:name="com.example.trilhospt.ui.profile.AboutFragment"
         android:label="Sobre"
         tools:layout="@layout/fragment_about" />
+
+    <fragment
+        android:id="@+id/uploadPhotoFragment"
+        android:name="com.example.trilhospt.ui.photos.UploadPhotoFragment"
+        android:label="Fotografar"
+        tools:layout="@layout/fragment_upload_photo" />
 </navigation>

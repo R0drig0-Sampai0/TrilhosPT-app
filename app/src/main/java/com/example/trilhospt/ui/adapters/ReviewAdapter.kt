@@ -31,16 +31,22 @@ class ReviewAdapter(
         holder.binding.tvDate.text = review.createdAt?.take(10) ?: "" // Show only date part
 
         // Load profile photo if available
-        review.user?.profilePhoto?.let { photoUrl ->
+        // Load profile photo if available
+        val userPhoto = review.user?.profilePhoto
+        if (!userPhoto.isNullOrEmpty()) {
+            holder.binding.ivUserAvatar.clearColorFilter()
+            
             val baseUrl = RetrofitClient.BASE_URL.trimEnd('/')
-            val fullUrl = if (photoUrl.startsWith("http")) photoUrl else "$baseUrl/${photoUrl.trimStart('/')}"
+            val fullUrl = if (userPhoto.startsWith("http")) userPhoto else "$baseUrl/${userPhoto.trimStart('/')}"
+            
             holder.binding.ivUserAvatar.load(fullUrl) {
                 crossfade(true)
                 placeholder(android.R.drawable.ic_menu_gallery)
                 error(android.R.drawable.ic_menu_gallery)
             }
-        } ?: run {
+        } else {
             holder.binding.ivUserAvatar.setImageResource(android.R.drawable.ic_menu_gallery)
+            holder.binding.ivUserAvatar.setColorFilter(android.graphics.Color.GRAY) // Re-apply tint for placeholder
         }
 
         // Handle profile mapping click

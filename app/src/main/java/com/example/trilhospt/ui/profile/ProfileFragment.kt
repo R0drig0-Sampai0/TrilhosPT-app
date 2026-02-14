@@ -72,6 +72,15 @@ class ProfileFragment : Fragment() {
 
         val userId = arguments?.getInt("userId", -1)?.takeIf { it != -1 }
         
+        // Listen for photo delete action from dialog
+        parentFragmentManager.setFragmentResultListener("photo_action", viewLifecycleOwner) { _, bundle ->
+            val action = bundle.getString("action")
+            val photoId = bundle.getInt("photoId")
+            if (action == "delete" && photoId != -1) {
+                viewModel.deletePhoto(photoId)
+            }
+        }
+        
         val repository = ApiRepository()
         val factory = ViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory)[ProfileViewModel::class.java]
@@ -88,14 +97,23 @@ class ProfileFragment : Fragment() {
         
         if (userId != null) {
             binding.btnLogout.visibility = View.GONE
+            binding.btnEditProfile.visibility = View.GONE
+            binding.btnSettings.visibility = View.GONE
         } else {
             binding.btnLogout.visibility = View.VISIBLE
+            binding.btnEditProfile.visibility = View.VISIBLE
+            binding.btnSettings.visibility = View.VISIBLE
             binding.btnLogout.setOnClickListener {
                 logout()
             }
+            binding.btnEditProfile.setOnClickListener {
+                Toast.makeText(context, "Editar Perfil: Em breve", Toast.LENGTH_SHORT).show()
+            }
+            binding.btnSettings.setOnClickListener {
+                Toast.makeText(context, "Definições: Em breve", Toast.LENGTH_SHORT).show()
+            }
         }
         
-        setupAddPhotoButton(userId)
         setupSwipeRefresh(userId)
     }
 
@@ -133,6 +151,7 @@ class ProfileFragment : Fragment() {
                     binding.progressBar.visibility = View.VISIBLE
                 }
                 is Resource.Success -> {
+                    // Start of profile observer success block
                     binding.progressBar.visibility = View.GONE
                     binding.swipeRefresh.isRefreshing = false
                     val user = resource.data
@@ -152,7 +171,7 @@ class ProfileFragment : Fragment() {
                         (activity as? androidx.appcompat.app.AppCompatActivity)?.supportActionBar?.title = getString(R.string.my_profile)
                     }
                     binding.tvTotalDistance.text = String.format("%.1f", user.totalDistance)
-                    binding.tvTrailsCount.text = user.totalTrails.toString()
+                    // binding.tvTrailsCount.text = user.totalTrails.toString() // Removed: We want completed trails count
                     binding.tvLevel.text = user.level.toString()
 
                     // Load Profile Photo
@@ -237,6 +256,10 @@ class ProfileFragment : Fragment() {
                 is Resource.Loading -> { }
                 is Resource.Success -> {
                     val trails = resource.data
+                    
+                    // Update trails count stat with completed trails count
+                    binding.tvTrailsCount.text = (trails?.size ?: 0).toString()
+
                     if (trails.isNullOrEmpty()) {
                         binding.rvCompletedTrails.visibility = View.GONE
                         binding.tvCompletedTrailsTitle.visibility = View.VISIBLE
@@ -309,28 +332,19 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setupGallery() {
+        val userIdArg = arguments?.getInt("userId", -1) ?: -1
+        val isOwner = (userIdArg == -1)
+
         photoAdapter = com.example.trilhospt.ui.adapters.ProfilePhotoAdapter(emptyList()) { photo ->
             photo.image?.let { url ->
-                val dialog = com.example.trilhospt.ui.ImageDetailDialogFragment.newInstance(url)
+                val dialog = com.example.trilhospt.ui.ImageDetailDialogFragment.newInstance(url, photo.id, isOwner)
                 dialog.show(parentFragmentManager, "image_detail")
             }
         }
         binding.rvGallery.adapter = photoAdapter
     }
 
-    private fun setupAddPhotoButton(userIdArg: Int?) {
-        // Only show Add Photo button if viewing own profile
-        if (userIdArg == null) {
-            binding.btnAddPhoto.visibility = View.VISIBLE
-            binding.btnAddPhoto.setOnClickListener {
-                showSourceSelectionDialog()
-            }
-            // Fetch trails for the spinner (using created trails for now)
-            viewModel.getCreatedTrails()
-        } else {
-            binding.btnAddPhoto.visibility = View.GONE
-        }
-    }
+
 
     private fun showSourceSelectionDialog() {
         val options = arrayOf("Câmara", "Galeria")

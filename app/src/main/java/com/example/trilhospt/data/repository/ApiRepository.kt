@@ -172,6 +172,14 @@ class ApiRepository {
         return apiService.getUserPhotos(userId)
     }
 
+    suspend fun deletePhoto(photoId: Int): Response<Unit> {
+        val token = authInterceptor.getToken()
+        if (token != null) {
+            return apiService.deletePhoto("Token $token", photoId)
+        }
+        throw IllegalStateException("Usuário não autenticado")
+    }
+
     suspend fun uploadPhoto(
         image: MultipartBody.Part,
         trailId: RequestBody,

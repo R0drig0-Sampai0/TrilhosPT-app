@@ -23,4 +23,16 @@
         app:tint="@android:color/white"
         android:contentDescription="Close" />
 
+    <ImageButton
+        android:id="@+id/btnDelete"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@android:drawable/ic_menu_delete"
+        app:tint="@android:color/white"
+        android:contentDescription="Delete"
+        android:visibility="gone" />
+
 </FrameLayout>

@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         
         setSupportActionBar(binding.toolbar)
         val appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.homeFragment, R.id.trailListFragment, R.id.profileFragment)
+            setOf(R.id.homeFragment, R.id.trailListFragment, R.id.uploadPhotoFragment, R.id.profileFragment)
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         

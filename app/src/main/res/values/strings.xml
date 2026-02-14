@@ -43,5 +43,6 @@
     <string name="total_distance">Distância Total</string>
     <string name="trails_created">Trilhos Criados</string>
     <string name="level">Nível</string>
+    <string name="profile_photo">Foto de Perfil</string>
     
 </resources>

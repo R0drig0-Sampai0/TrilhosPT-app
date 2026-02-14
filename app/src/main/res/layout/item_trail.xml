@@ -21,6 +21,18 @@
             android:src="@android:drawable/ic_menu_gallery"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageView
+            android:id="@+id/ivVerifiedBadge"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_margin="12dp"
+            android:src="@drawable/ic_check_circle_filled"
+            android:visibility="gone"
+            app:tint="#4CAF50"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:elevation="4dp" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="80dp"

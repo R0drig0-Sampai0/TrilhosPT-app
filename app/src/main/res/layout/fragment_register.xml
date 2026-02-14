@@ -16,6 +16,12 @@
         app:layout_constraintBottom_toTopOf="@id/cardRegister"
         app:layout_constraintVertical_chainStyle="packed">
 
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/ic_app_logo"
+            app:tint="@color/primary" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

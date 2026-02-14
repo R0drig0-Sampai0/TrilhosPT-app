@@ -167,4 +167,29 @@ class ProfileViewModel(private val repository: ApiRepository) : ViewModel() {
             }
         }
     }
+
+    fun deletePhoto(photoId: Int) {
+        // Keep loading state separate or just show toast on error/success
+        viewModelScope.launch {
+            try {
+                val response = repository.deletePhoto(photoId)
+                if (response.isSuccessful) {
+                    // Update the list locally
+                    val currentPhotos = (_photos.value as? Resource.Success)?.data?.toMutableList()
+                    currentPhotos?.removeAll { it.id == photoId }
+                    if (currentPhotos != null) {
+                        _photos.value = Resource.Success(currentPhotos)
+                    } else {
+                        // Reload if needed
+                         val userId = (_profile.value as? Resource.Success)?.data?.id
+                         if (userId != null) getUserPhotos(userId)
+                    }
+                } else {
+                    // Handle error (maybe emit to a singleLiveEvent)
+                }
+            } catch (e: Exception) {
+               // Handle exception
+            }
+        }
+    }
 }

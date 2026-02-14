@@ -58,6 +58,13 @@ class TrailAdapter(
             } else {
                 binding.ratingContainer.visibility = android.view.View.GONE
             }
+
+            // Show completed badge if applicable
+            if (trail.completedTrailId != null) {
+                binding.ivVerifiedBadge.visibility = android.view.View.VISIBLE
+            } else {
+                binding.ivVerifiedBadge.visibility = android.view.View.GONE
+            }
             
             binding.root.setOnClickListener {
                 trail.id?.let { id -> onItemClick(id) }
