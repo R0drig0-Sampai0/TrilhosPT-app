@@ -11,8 +11,9 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
     
-    // Base URL para o emulador Android (10.0.2.2 mapeia para localhost da máquina host)
-    private const val BASE_URL = "http://10.0.2.2:8000/"
+    // Base URL para o emulador (10.0.2.2) ou dispositivo físico (IP da máquina)
+    // ATENÇÃO: Se mudar de rede Wi-Fi, este IP (10.10.210.112) pode mudar!
+    private const val BASE_URL = "http://10.129.146.48:8000/"
     
     // Timeout em segundos
     private const val CONNECT_TIMEOUT = 30L

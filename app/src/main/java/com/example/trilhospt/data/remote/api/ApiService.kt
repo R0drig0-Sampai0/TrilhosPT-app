@@ -28,6 +28,12 @@ interface ApiService {
         @Body user: UserDto
     ): Response<UserDto>
     
+    @GET("api/users/{id}/")
+    suspend fun getUserById(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
+    ): Response<UserDto>
+    
     @Multipart
     @POST("api/auth/profile/photo/")
     suspend fun uploadProfilePhoto(
@@ -43,8 +49,9 @@ interface ApiService {
         @Query("difficulty") difficulty: String? = null,
         @Query("min_distance") minDistance: Double? = null,
         @Query("max_distance") maxDistance: Double? = null,
-        @Query("search") search: String? = null
-    ): Response<List<TrailDto>>
+        @Query("search") search: String? = null,
+        @Query("user_id") userId: Int? = null
+    ): Response<PaginatedResponse<TrailDto>>
     
     @POST("api/trails/")
     suspend fun createTrail(
@@ -73,7 +80,7 @@ interface ApiService {
     @GET("api/trails/my/")
     suspend fun getMyTrails(
         @Header("Authorization") token: String
-    ): Response<List<TrailDto>>
+    ): Response<PaginatedResponse<TrailDto>>
     
     @GET("api/trails/{id}/stats/")
     suspend fun getTrailStats(
@@ -93,7 +100,7 @@ interface ApiService {
     suspend fun uploadPhoto(
         @Header("Authorization") token: String,
         @Part image: MultipartBody.Part,
-        @Part("trail_id") trailId: RequestBody,
+        @Part("trail") trailId: RequestBody,
         @Part("latitude") latitude: RequestBody,
         @Part("longitude") longitude: RequestBody,
         @Part("description") description: RequestBody? = null
@@ -164,4 +171,32 @@ interface ApiService {
     suspend fun getUserBadges(
         @Path("userId") userId: Int
     ): Response<List<BadgeDto>>
+
+    // ========== PHOTOS ==========
+
+    @GET("api/users/{userId}/photos/")
+    suspend fun getUserPhotos(
+        @Path("userId") userId: Int
+    ): Response<List<PhotoDto>>
+
+    // ========== COMPLETED TRAILS ==========
+
+    @POST("api/completed-trails/")
+    suspend fun markTrailCompleted(
+        @Header("Authorization") token: String,
+        @Body request: Map<String, Int>
+    ): Response<CompletedTrailDto>
+
+    @DELETE("api/completed-trails/{id}/")
+    suspend fun deleteCompletedTrail(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
+    ): Response<Unit>
+
+    @GET("api/completed-trails/")
+    suspend fun getCompletedTrails(
+        @Header("Authorization") token: String,
+        @Query("user_id") userId: Int? = null
+    ): Response<PaginatedResponse<CompletedTrailDto>>
+
 }
