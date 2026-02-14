@@ -55,9 +55,18 @@ class LoginFragment : Fragment() {
         viewModel.loginState.observe(viewLifecycleOwner) { resource ->
             when(resource) {
                 is Resource.Loading -> {
-                    // Show loading if progressBar implemented
+                    // Show loading
+                    binding.progressBar.visibility = View.VISIBLE
+                    binding.btnLogin.isEnabled = false
+                    binding.btnLogin.text = "A entrar..."
+                    binding.etUsername.isEnabled = false
+                    binding.etPassword.isEnabled = false
                 }
                 is Resource.Success -> {
+                    // Hide loading
+                    binding.progressBar.visibility = View.GONE
+                    binding.btnLogin.isEnabled = true
+                    
                     // Save token using AuthInterceptor
                     val authInterceptor = AuthInterceptor(requireContext())
                     resource.data.token?.let { authInterceptor.saveToken(it) }
@@ -71,7 +80,14 @@ class LoginFragment : Fragment() {
                     findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
                 }
                 is Resource.Error -> {
-                    Toast.makeText(requireContext(), resource.message, Toast.LENGTH_SHORT).show()
+                    // Hide loading and show error
+                    binding.progressBar.visibility = View.GONE
+                    binding.btnLogin.isEnabled = true
+                    binding.btnLogin.text = getString(R.string.login)
+                    binding.etUsername.isEnabled = true
+                    binding.etPassword.isEnabled = true
+                    
+                    Toast.makeText(requireContext(), "Erro: ${resource.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }

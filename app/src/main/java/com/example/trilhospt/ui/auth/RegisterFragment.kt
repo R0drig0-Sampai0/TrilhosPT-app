@@ -53,8 +53,19 @@ class RegisterFragment : Fragment() {
             when(resource) {
                 is Resource.Loading -> {
                     // Show loading
+                    binding.progressBar.visibility = View.VISIBLE
+                    binding.btnRegister.isEnabled = false
+                    binding.btnRegister.text = "A registar..."
+                    
+                    binding.etUsername.isEnabled = false
+                    binding.etEmail.isEnabled = false
+                    binding.etPassword.isEnabled = false
                 }
                 is Resource.Success -> {
+                    // Hide loading
+                    binding.progressBar.visibility = View.GONE
+                    binding.btnRegister.isEnabled = true
+                    
                     // Save token using AuthInterceptor
                     val authInterceptor = AuthInterceptor(requireContext())
                     resource.data.token?.let { authInterceptor.saveToken(it) }
@@ -66,7 +77,16 @@ class RegisterFragment : Fragment() {
                     findNavController().navigate(R.id.action_registerFragment_to_homeFragment)
                 }
                 is Resource.Error -> {
-                    Toast.makeText(requireContext(), resource.message, Toast.LENGTH_SHORT).show()
+                    // Hide loading and show error
+                    binding.progressBar.visibility = View.GONE
+                    binding.btnRegister.isEnabled = true
+                    binding.btnRegister.text = getString(R.string.register)
+                    
+                    binding.etUsername.isEnabled = true
+                    binding.etEmail.isEnabled = true
+                    binding.etPassword.isEnabled = true
+                    
+                    Toast.makeText(requireContext(), "Erro: ${resource.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }
