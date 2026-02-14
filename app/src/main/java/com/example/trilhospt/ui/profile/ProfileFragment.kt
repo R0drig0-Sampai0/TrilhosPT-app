@@ -407,10 +407,12 @@ class ProfileFragment : Fragment() {
         // Setup Spinner
         val trailsList = mutableListOf<com.example.trilhospt.data.remote.dto.TrailDto>()
         
-        // Populate spinner from viewModel logic - checking current trails
-        val currentTrails = viewModel.createdTrails.value
+        // Populate spinner from viewModel logic - checking COMPLETED trails
+        val currentTrails = viewModel.completedTrails.value
         if (currentTrails is Resource.Success) {
-            trailsList.addAll(currentTrails.data)
+            // Filter unique trails by ID
+            val uniqueTrails = currentTrails.data.distinctBy { it.id }
+            trailsList.addAll(uniqueTrails)
         }
 
         val trailNames = trailsList.map { it.name }
