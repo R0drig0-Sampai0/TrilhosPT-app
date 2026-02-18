@@ -1,6 +1,6 @@
 # Project Structure & Implementation Guide for TrilhosPT
 
-This document outlines the recommended file and folder structure for your Android application, focusing on a clean architecture (MVVM) to support the Retrofit implementation you've started.
+This document outlines the recommended file and folder structure of the Android application.
 
 ## 1. Recommended Folder Structure
 
